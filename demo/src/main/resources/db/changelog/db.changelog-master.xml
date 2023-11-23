@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <property name="schemaName" value="public"/>
+    <property name="nextValFunction" value="nextVal" dbms="postgresql"/>
+
+    <changeSet id="createBookTable" author="nikola">
+        <createTable tableName="book">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_copies" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="available_copies" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createStudentTable" author="nikola">
+        <createTable tableName="student">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="full_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createBorrowedBooksTable" author="nikola">
+        <createTable tableName="borrowed_books">
+            <column name="student_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey
+                tableName="borrowed_books"
+                columnNames="student_id, book_id"
+                constraintName="pk_borrowed_books"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="borrowed_books"
+                baseColumnNames="student_id"
+                referencedTableName="student"
+                referencedColumnNames="id"
+                constraintName="fk_borrowed_books_student"
+                onDelete="CASCADE"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="borrowed_books"
+                baseColumnNames="book_id"
+                referencedTableName="book"
+                referencedColumnNames="id"
+                constraintName="fk_borrowed_books_book"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+
+    <changeSet id="insertBooks" author="nikola">
+        <sql>
+            <![CDATA[
+            INSERT INTO ${schemaName}.book (id, title, total_copies, available_copies)
+            VALUES (1, 'Effective Java', 5, 5);
+            INSERT INTO ${schemaName}.book (id, title, total_copies, available_copies)
+            VALUES (2, 'SQL databases', 10, 10);
+            ]]>
+        </sql>
+    </changeSet>
+
+    <changeSet id="insertStudents" author="nikola">
+        <sql>
+            <![CDATA[
+            INSERT INTO ${schemaName}.student (id, full_name)
+            VALUES (1, 'Nikola Smoljanovic');
+            INSERT INTO ${schemaName}.student (id, full_name)
+            VALUES (2, 'Miona Skondric');
+            ]]>
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
